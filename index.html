@@ -1,655 +1,530 @@
-<html lang="es"><head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Stream en vivo — Test</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Inter:wght@400;600;800&amp;display=swap" rel="stylesheet">
-  <meta name="description" content="Reacciona con nosotros. Mirá aquí la pantalla compartida y chatea en el stream oficial.">
-  <style>
-    :root {
-      --bg: #030712;
-      --bg2: #0f172a;
-      --sidebar: #0b1120;
-      --line: rgba(255, 255, 255, 0.08);
-      --pri: #10b981;
-      --ink: #f8fafc;
-      --muted: #94a3b8;
-    }
+<!DOCTYPE html>
+<html lang="es">
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><title>Stream en vivo — Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <meta name="description"
+        content="Reacciona con nosotros. Mirá aquí la pantalla compartida y chatea en el stream oficial.">
+    <style>
+        :root {
+            --bg: #030712;
+            --bg2: #0f172a;
+            --sidebar: #0b1120;
+            --line: rgba(255, 255, 255, 0.08);
+            --pri: #10b981;
+            --ink: #f8fafc;
+            --muted: #94a3b8;
+        }
 
-    html, body {
-      height: 100vh;
-      overflow: hidden;
-      color: var(--ink);
-      font-family: Inter, system-ui, sans-serif;
-      background: var(--bg);
-      display: flex;
-      flex-direction: column;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    /* ── Layout ── */
-    .layout {
-      display: flex;
-      flex: 1;
-      height: calc(100vh - 56px);
-      overflow: hidden;
-    }
+        html,
+        body {
+            height: 100vh;
+            overflow: hidden;
+            color: var(--ink);
+            font-family: Inter, system-ui, sans-serif;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+        }
 
-    .main-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: #000;
-      position: relative;
-      min-width: 0;
-    }
+        /* ── Layout ── */
+        .layout {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 56px);
+            overflow: hidden;
+        }
 
-    .chat-col {
-      width: 340px;
-      min-width: 340px;
-      background: var(--sidebar);
-      border-left: 1px solid var(--line);
-      display: flex;
-      flex-direction: column;
-      z-index: 5;
-      transition: width 0.3s ease, min-width 0.3s ease, opacity 0.3s ease;
-    }
+        .main-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+            position: relative;
+            min-width: 0;
+        }
 
-    .chat-col.collapsed {
-      width: 0;
-      min-width: 0;
-      opacity: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
+        .chat-col {
+            width: 340px;
+            min-width: 340px;
+            background: var(--sidebar);
+            border-left: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
+            transition: width 0.3s ease, min-width 0.3s ease, opacity 0.3s ease;
+        }
 
-    /* ── Player ── */
-    .player-wrap {
-      flex: 1;
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      overflow: hidden;
-    }
+        .chat-col.collapsed {
+            width: 0;
+            min-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
 
-    .player-wrap iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+        /* ── Player ── */
+        .player-wrap {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
 
-    /* ── No stream state ── */
-    .no-stream {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #030712;
-      padding: 0;
-      text-align: center;
-      overflow: hidden;
-    }
+        .player-wrap iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
-    .no-stream-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
+        /* ── No stream state ── */
+        .no-stream {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #030712;
+            padding: 0;
+            text-align: center;
+            overflow: hidden;
+        }
 
-    .no-stream-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 32px;
-      background: linear-gradient(0deg, rgba(3,7,18,0.85) 0%, transparent 50%);
-    }
+        .no-stream-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
 
-    .no-stream h2 {
-      font-family: "Bebas Neue";
-      font-size: 36px;
-      color: #fff;
-      letter-spacing: 2px;
-      margin: 0 0 6px;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-    }
+        .no-stream-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 32px;
+            background: linear-gradient(0deg, rgba(3, 7, 18, 0.85) 0%, transparent 50%);
+        }
 
-    .no-stream p {
-      color: var(--muted);
-      font-size: 13px;
-      max-width: 360px;
-      line-height: 1.6;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
-    }
+        .no-stream h2 {
+            font-family: "Bebas Neue";
+            font-size: 36px;
+            color: #fff;
+            letter-spacing: 2px;
+            margin: 0 0 6px;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+        }
 
+        .no-stream p {
+            color: var(--muted);
+            font-size: 13px;
+            max-width: 360px;
+            line-height: 1.6;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+        }
 
-    /* ── Header overlay ── */
-    .stream-cover-top {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 64px;
-      background: linear-gradient(180deg, rgba(3,7,18,0.95) 50%, transparent 100%);
-      z-index: 25;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      pointer-events: auto;
-    }
+        /* ── Header overlay ── */
+        .stream-cover-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: linear-gradient(180deg, rgba(3, 7, 18, 0.95) 50%, transparent 100%);
+            z-index: 25;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            pointer-events: auto;
+        }
 
-    /* Marca de agua Kick: bloquea clicks pero sin tapar video */
-    .stream-cover-watermark {
-      position: absolute;
-      bottom: 44px;
-      right: 10px;
-      width: 220px;
-      height: 65px;
-      background: transparent;
-      z-index: 25;
-      pointer-events: auto;
-    }
+        /* Marca de agua: bloquea clicks pero sin tapar video */
+        .stream-cover-watermark {
+            position: absolute;
+            bottom: 44px;
+            right: 10px;
+            width: 220px;
+            height: 65px;
+            background: transparent;
+            z-index: 25;
+            pointer-events: auto;
+        }
 
-    @media (max-width: 600px) {
-      .stream-cover-watermark {
-        bottom: 35px;
-        width: 140px;
-        height: 35px;
-        right: 5px;
-      }
-    }
+        @media (max-width: 600px) {
+            .stream-cover-watermark {
+                bottom: 35px;
+                width: 140px;
+                height: 35px;
+                right: 5px;
+            }
+        }
 
-    /* ── Header elements ── */
-    .btn-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7px 14px;
-      background: rgba(255,255,255,0.07);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 99px;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 12px;
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
+        /* ── Header elements ── */
+        .stream-title {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 24px;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    .btn-back:hover {
-      background: rgba(255,255,255,0.14);
-      transform: translateX(-3px);
-    }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .stream-title {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: 24px;
-      letter-spacing: 1px;
-      background: linear-gradient(to right, #10b981, #3b82f6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 99px;
+            color: #ef4444;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
 
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        .live-indicator.offline {
+            background: rgba(148, 163, 184, 0.1);
+            border-color: rgba(148, 163, 184, 0.2);
+            color: var(--muted);
+        }
 
-    .live-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 11px;
-      background: rgba(239,68,68,0.12);
-      border: 1px solid rgba(239,68,68,0.25);
-      border-radius: 99px;
-      color: #ef4444;
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: 1px;
-    }
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            background: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ef4444;
+            animation: blink 1.5s infinite;
+        }
 
-    .live-indicator.offline {
-      background: rgba(148,163,184,0.1);
-      border-color: rgba(148,163,184,0.2);
-      color: var(--muted);
-    }
+        .live-indicator.offline .live-dot {
+            background: var(--muted);
+            box-shadow: none;
+            animation: none;
+        }
 
-    .live-dot {
-      width: 7px;
-      height: 7px;
-      background: #ef4444;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #ef4444;
-      animation: blink 1.5s infinite;
-    }
+        /* ── Botón toggle chat ── */
+        .btn-chat-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
 
-    .live-indicator.offline .live-dot {
-      background: var(--muted);
-      box-shadow: none;
-      animation: none;
-    }
+        .btn-chat-toggle:hover {
+            background: rgba(255, 255, 255, 0.13);
+            color: #fff;
+        }
 
-    /* ── Botón toggle chat ── */
-    .btn-chat-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 99px;
-      color: rgba(255,255,255,0.75);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
+        /* ── Chat ── */
+        .chat-iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
 
-    .btn-chat-toggle:hover {
-      background: rgba(255,255,255,0.13);
-      color: #fff;
-    }
+        /* ── Footer ── */
+        .footer {
+            height: 56px;
+            background: var(--bg2);
+            border-top: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 30;
+            gap: 8px;
+        }
 
-    /* ── Footer ── */
-    .footer {
-      height: 56px;
-      background: var(--bg2);
-      border-top: 1px solid var(--line);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      z-index: 30;
-      gap: 8px;
-    }
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
 
-    .footer-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-    }
+        .footer-right {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
 
-    .footer-right {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
+        .sbtn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 13px;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
 
-    /* Contador de viewers propio */
-    .viewer-count {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 12px;
-      color: var(--muted);
-      padding: 4px 10px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--line);
-      border-radius: 99px;
-    }
+        .sbtn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.2);
+        }
 
-    .viewer-dot {
-      width: 6px;
-      height: 6px;
-      background: #10b981;
-      border-radius: 50%;
-      box-shadow: 0 0 6px #10b981;
-    }
+        .sbtn.twitch {
+            background: #9146FF;
+            border-color: #9146FF;
+            color: white;
+            box-shadow: 0 3px 12px rgba(145, 70, 255, 0.2);
+        }
 
-    .sbtn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px 13px;
-      border-radius: 7px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #f8fafc;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 12px;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
+        .sbtn.yt {
+            background: #ff0000;
+            border-color: #ff4d4d;
+            color: white;
+        }
 
-    .sbtn:hover { transform: translateY(-2px); filter: brightness(1.2); }
-    .sbtn.kick    { background: #53fc18; border-color: #53fc18; color: #000; box-shadow: 0 3px 12px rgba(83,252,24,0.2); }
-    .sbtn.twitch  { background: #9146FF; border-color: #9146FF; color: white; box-shadow: 0 3px 12px rgba(145,70,255,0.2); }
-    .sbtn.yt      { background: #ff0000; border-color: #ff4d4d; color: white; }
-    .sbtn.patreon { background: #FF424D; border-color: #FF424D; color: white; }
-    .sbtn.discord { background: #5865F2; border-color: #5865F2; color: white; }
+        .sbtn.kick {
+            background: #53fc18;
+            border-color: #53fc18;
+            color: #000;
+            box-shadow: 0 3px 12px rgba(83, 252, 24, 0.2);
+        }
 
-    /* ── Chat ── */
-    .chat-header {
-      display: flex;
-      background: #020617;
-      border-bottom: 1px solid var(--line);
-      flex-shrink: 0;
-    }
+        .sbtn.discord {
+            background: #5865F2;
+            border-color: #5865F2;
+            color: white;
+        }
 
-    .chat-tab {
-      flex: 1;
-      padding: 13px;
-      text-align: center;
-      font-weight: 700;
-      font-size: 12px;
-      letter-spacing: 1px;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      border-bottom: 2px solid transparent;
-    }
+        .sbtn.patreon {
+            background: #FF424D;
+            border-color: #FF424D;
+            color: white;
+        }
 
-    .chat-tab:hover { color: #fff; background: rgba(255,255,255,0.02); }
-    .chat-tab.active[data-target="chatKick"]   { color: #53fc18; border-bottom-color: #53fc18; background: rgba(83,252,24,0.04); }
-    .chat-tab.active[data-target="chatTwitch"] { color: #9146FF; border-bottom-color: #9146FF; background: rgba(145,70,255,0.04); }
+        /* ── Toast de reconexión ── */
+        #reconnect-toast {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 99px;
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+        }
 
-    .chat-content { flex: 1; width: 100%; position: relative; overflow: hidden; }
+        #reconnect-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
 
-    .chat-wrap {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-    }
+        @keyframes blink {
 
-    .chat-wrap.active { display: block; }
-    .chat-wrap iframe { width: 100%; height: 100%; border: none; }
+            0%,
+            100% {
+                opacity: 1
+            }
 
-    /* ── Toast de reconexión ── */
-    #reconnect-toast {
-      position: fixed;
-      bottom: 70px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: rgba(16,185,129,0.15);
-      border: 1px solid rgba(16,185,129,0.3);
-      color: #10b981;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 99px;
-      opacity: 0;
-      transition: all 0.4s ease;
-      pointer-events: none;
-      z-index: 100;
-      white-space: nowrap;
-    }
+            50% {
+                opacity: 0.35
+            }
+        }
 
-    #reconnect-toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .layout {
+                flex-direction: column;
+            }
 
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+            .chat-col {
+                width: 100% !important;
+                min-width: 100% !important;
+                height: 360px;
+                border-left: none;
+                border-top: 1px solid var(--line);
+                transition: height 0.3s ease, opacity 0.3s ease;
+            }
 
-    /* ── Responsive ── */
-    @media (max-width: 900px) {
-      .layout { flex-direction: column; }
+            .chat-col.collapsed {
+                height: 0;
+                min-width: unset !important;
+                overflow: hidden;
+                opacity: 0;
+            }
 
-      .chat-col {
-        width: 100% !important;
-        min-width: 100% !important;
-        height: 360px;
-        border-left: none;
-        border-top: 1px solid var(--line);
-        transition: height 0.3s ease, opacity 0.3s ease;
-      }
+            .footer-right {
+                gap: 4px;
+            }
 
-      .chat-col.collapsed {
-        height: 0;
-        min-width: unset !important;
-        overflow: hidden;
-        opacity: 0;
-      }
+            .sbtn {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+        }
 
-      .footer-right { gap: 4px; }
-      .sbtn { padding: 5px 10px; font-size: 11px; }
-
-      .viewer-count { display: none; }
-    }
-
-    @media (max-width: 480px) {
-      .stream-title { font-size: 19px; }
-      .btn-back span { display: none; }
-    }
-  </style>
+        @media (max-width: 480px) {
+            .stream-title {
+                font-size: 19px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <div class="layout">
-
+    <div class="layout">
     <!-- ── Columna principal (video) ── -->
-    <div class="main-col">
-      <div class="player-wrap" id="playerWrap">
-
-        <!-- Header personalizado -->
-        <div class="stream-cover-top">
-
-          <div class="stream-title">STREAM EN VIVO TEST</div>
-
-          <div class="header-right">
-            <button class="btn-chat-toggle" id="chatToggleBtn" onclick="toggleChat()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              </svg>
-              <span id="chatToggleLabel">Ocultar Chat</span>
-            </button>
-            <div class="live-indicator" id="liveIndicator">
-              <div class="live-dot"></div>
-              <span id="liveText">DIRECTO</span>
+     <div class="main-col">
+        <div class="player-wrap" id="playerWrap">
+            <!-- Header personalizado -->                
+            <div class="stream-cover-top">
+                <div class="stream-title">STREAM EN VIVO TEST</div>
+                <div class="header-right">
+                    <button class="btn-chat-toggle" onclick="toggleChat()">
+                        <svg width="13" height="13"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span id="chatToggleLabel">Ocultar Chat</span>
+                    </button>
+                    <div class="live-indicator" id="liveIndicator">
+                        <div class="live-dot"></div>
+                        <span id="liveText">DIRECTO</span>
+                    </div></div>
+                </div>
+                <!-- Marca de agua -->
+                <div class="stream-cover-watermark"></div>
+                <!-- Contenedor del player -->
+                 <div id="playerFrameContainer" style="width:100%;height:100%;"></div>
+                </div>
             </div>
-          </div>
+        <!-- ── Columna de chat (carga directo, sin tabs) ── -->
+         <div class="chat-col" id="chatCol">
+            <iframe class="chat-iframe" id="chatTwitchFrame" src="" allowfullscreen>
+            </iframe>
         </div>
-
-        <!-- Overlays para tapar UI de Kick -->
-        <div class="stream-cover-watermark"></div>
-
-        <!-- Contenedor del player -->
-        <div id="playerFrameContainer" style="width:100%;height:100%;"><iframe src="https://player.kick.com/lacobraaawatch" allowfullscreen="" allow="autoplay; fullscreen"></iframe></div>
-
-      </div>
     </div>
+        <!-- ── Footer ── -->
+        <div class="footer"> 
+            <div class="footer-left">
 
-    <!-- ── Columna de chat ── -->
-    <div class="chat-col" id="chatCol">
-      <!--<div class="chat-header">
-        
-        <div class="chat-tab" data-target="chatTwitch">CHAT</div>
-      </div> -->
-      <div class="chat-content">
-        
-        <div class="chat-wrap active" id="chatTwitch"><iframe src="https://www.twitch.tv/embed/charlitoss/chat?darkpopout&amp;parent=jonathanepmdev.github.io"></iframe></div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ── Footer ── -->
-  <div class="footer">
-    <div class="footer-left">
-      <div class="viewer-count" id="viewerCountBadge" style="display:none">
-        <div class="viewer-dot"></div>
-        <span id="viewerCount">—</span> viendo
-      </div>
-    </div>
-    <div class="footer-right">
-
-      <a class="sbtn yt" href="https://youtube.com/@Camilanga7" target="_blank" rel="noopener">YouTube</a>
-    </div>
-  </div>
-
-  <!-- Toast -->
-  <div id="reconnect-toast">Stream actualizado</div>
-
-
-  <script>
-    // ─────────────────────────────────────────────
-    //  Estado
-    // ─────────────────────────────────────────────
-    let currentStreamUrl = "";
-    let currentJson = {};
-    let chatVisible = true;
-    let pollInterval = null;
-
-    // ─────────────────────────────────────────────
-    //  Toggle chat
-    // ─────────────────────────────────────────────
-    function toggleChat() {
-      chatVisible = !chatVisible;
-      const col = document.getElementById('chatCol');
-      const label = document.getElementById('chatToggleLabel');
-      col.classList.toggle('collapsed', !chatVisible);
-      label.textContent = chatVisible ? 'Ocultar Chat' : 'Mostrar Chat';
-    }
-
-    // ─────────────────────────────────────────────
-    //  Render player
-    // ─────────────────────────────────────────────
-    function renderPlayer(url) {
-      document.getElementById('playerFrameContainer').innerHTML =
-        `<iframe src="${url}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
-    }
-
-    const OFFLINE_IMG = '';
-    function showOfflineImage() {
-      document.getElementById('playerFrameContainer').innerHTML = `
-        <div class="no-stream">
-          <img class="no-stream-img" src="${OFFLINE_IMG}" alt="Stream offline">
-        </div>`;
-    }
-
-    function showNoStream(msg, sub) {
-      document.getElementById('playerFrameContainer').innerHTML = `
-        <div class="no-stream">
-          <img class="no-stream-img" src="${OFFLINE_IMG}" alt="Stream offline">
-          <div class="no-stream-overlay">
-            <h2>${msg}</h2>
-            <p>${sub}</p>
-          </div>
-        </div>`;
-    }
-
-    // ─────────────────────────────────────────────
-    //  Actualizar indicador LIVE
-    // ─────────────────────────────────────────────
-    function setLiveState(isLive) {
-      const el = document.getElementById('liveIndicator');
-      const dot = el.querySelector('.live-dot');
-      const txt = document.getElementById('liveText');
-      if (isLive) {
-        el.classList.remove('offline');
-        txt.textContent = 'DIRECTO';
-        dot.style.animation = '';
-      } else {
-        el.classList.add('offline');
-        txt.textContent = 'OFFLINE';
-        dot.style.animation = 'none';
-      }
-    }
-
-    // ─────────────────────────────────────────────
-    //  Toast de actualización
-    // ─────────────────────────────────────────────
-    function showToast(msg) {
-      const t = document.getElementById('reconnect-toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    // ─────────────────────────────────────────────
-    //  Carga y polling de cine.json
-    // ─────────────────────────────────────────────
-    function applyJson(j, isUpdate) {
-      const hadStream = !!currentStreamUrl;
-      const newUrl = j.streamUrl || "";
-
-      // ── Player ──
-      if (newUrl && newUrl !== currentStreamUrl) {
-        currentStreamUrl = newUrl;
-        renderPlayer(newUrl);
-        setLiveState(true);
-        if (isUpdate && hadStream) showToast('📡 Stream actualizado');
-      } else if (!newUrl) {
-        currentStreamUrl = "";
-        setLiveState(false);
-        showOfflineImage();
-      }
-
-      // ── Twitch Chat ──
-      if (j.twitchChannel && j.twitchParent && j.twitchChannel !== currentJson.twitchChannel) {
-        document.getElementById('chatTwitch').innerHTML =
-          `<iframe src="https://www.twitch.tv/embed/${j.twitchChannel}/chat?darkpopout&parent=${j.twitchParent}"></iframe>`;
-      } else if (!j.twitchChannel && !currentJson.twitchChannel) {
-        document.getElementById('chatTwitch').innerHTML =
-          '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Falta canal de Twitch en la configuración.</div>';
-      }
-
-      currentJson = j;
-    }
-
-    function fetchStream(isUpdate) {
-      fetch('./cine.json?t=' + Date.now())
-        .then(r => r.json())
-        .then(j => applyJson(j, isUpdate))
-        .catch(() => {
-          if (!isUpdate) {
-            setLiveState(false);
-            showOfflineImage();
-          }
-        });
-    }
-
-    // Carga inicial
-   // fetchStream(false);
-
-    applyJson({
-      //streamUrl: "https://player.kick.com/lacobraaa",
-      streamUrl: "https://www.youtube.com/embed/vGNglKWqwcQ?autoplay=1",
-      twitchChannel: "charlitoss",
-      twitchParent: "jonathanepmdev.github.io"
-    }, false);
-
-    // Polling cada 30 segundos
-    //pollInterval = setInterval(() => fetchStream(true), 30000);
-
-    // ─────────────────────────────────────────────
-    //  Tabs del chat
-    // ─────────────────────────────────────────────
-
-    //document.addEventListener('DOMContentLoaded', function (){
-    //  document.querySelector('.chat-tab[data-target="chatTwitch"]').classList.add('active');
-    //  document.getElementById('chatTwitch').classList.add('active');
-    //}); 
+            </div> 
+            <div class="footer-right">
+            <!-- Agrega aquí tus links: cambia el href y la clase (yt, twitch, kick, discord, patreon) --><a
+                class="sbtn yt" href="https://youtube.com/@Camilanga7" target="_blank" rel="noopener">YouTube</a>
+            </div>
+        </div>
+    <!-- Toast -->
+    <div id="reconnect-toast">Stream actualizado</div>
     
-    document.querySelectorAll('.chat-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.chat-wrap').forEach(c => c.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.getAttribute('data-target')).classList.add('active');
-      });
-    });
-  </script>
+    <script>
+    // ─────────────────────────────────────────────    // CONFIGURACIÓN — edita solo esta sección    // ─────────────────────────────────────────────    
+        const CONFIG = {
+            streamUrl: "https://www.youtube.com/embed/vGNglKWqwcQ?autoplay=1", 
+            // URL del player (Kick o YouTube)      
+            twitchChannel: "charlitoss", 
+            // Nombre del canal de Twitch para el chat      
+            twitchParent: "jonathanepmdev.github.io", 
+            // Tu dominio de GitHub Pages      
+            offlineImg: "" // URL de imagen cuando no hay stream (opcional)    
+        };
+    // ─────────────────────────────────────────────
+        let chatVisible = true;
+        // Toggle chat    
+        function toggleChat() {
+            chatVisible = !chatVisible;document.getElementById('chatCol').classList.toggle('collapsed', !chatVisible);
+            document.getElementById('chatToggleLabel').textContent = chatVisible ? 'Ocultar Chat' : 'Mostrar Chat';
+        }
+        // Indicador LIVE    
+        function setLiveState(isLive) {
+            const el = document.getElementById('liveIndicator');
+            const dot = el.querySelector('.live-dot');
+            const txt = document.getElementById('liveText');
+            if (isLive) {
+                el.classList.remove('offline');
+                txt.textContent = 'DIRECTO';
+                dot.style.animation = '';
+            } else {
+                el.classList.add('offline');
+                txt.textContent = 'OFFLINE';
+                dot.style.animation = 'none';
+            }
+        }
 
+        // Render player    
+        function renderPlayer(url) {
+            document.getElementById('playerFrameContainer').innerHTML =`<iframe src="${url}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+        }
 
-</body></html>
+        // Imagen offline    
+        function showOffline() {
+            const img = CONFIG.offlineImg ? `<img class="no-stream-img" src="${CONFIG.offlineImg}" alt="Offline">` : `<div style="color:var(--muted);font-size:14px">Stream offline</div>`;
+            document.getElementById('playerFrameContainer').innerHTML = `<div class="no-stream">${img}</div>`;
+        }
+
+        // Inicializar    
+        function init() {
+            // Player      
+            if (CONFIG.streamUrl) {
+                renderPlayer(CONFIG.streamUrl);
+                setLiveState(true);
+            } else {
+                showOffline();
+                setLiveState(false);
+            }
+
+        // Chat de Twitch directo, sin tabs      
+        if (CONFIG.twitchChannel && CONFIG.twitchParent) {
+            document.getElementById('chatTwitchFrame').src =`https://www.twitch.tv/embed/${CONFIG.twitchChannel}/chat?darkpopout&parent=${CONFIG.twitchParent}`;
+        }
+    }
+    
+    init(); </script>
+</body>
+
+</html>
