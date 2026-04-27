@@ -620,7 +620,13 @@
     }
 
     // Carga inicial
-    fetchStream(false);
+   // fetchStream(false);
+
+    applyJson({
+      streamUrl: "https://player.kick.com/camilanga7watch",
+      twitchChannel: "https://www.twitch.tv/charlitoss",
+      twitchParent: "jonathanepmdev.github.io"
+    })
 
     // Polling cada 30 segundos
     pollInterval = setInterval(() => fetchStream(true), 30000);
