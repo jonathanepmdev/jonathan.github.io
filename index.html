@@ -624,7 +624,7 @@
 
     applyJson({
       //streamUrl: "https://player.kick.com/lacobraaa",
-      streamUrl: "https://www.youtube.com/embed/vGNglKWqwcQ?si=WWz9V-0hAKkGW6fr",
+      streamUrl: "https://www.youtube.com/embed/vGNglKWqwcQ?autoplay=1",
       twitchChannel: "charlitoss",
       twitchParent: "jonathanepmdev.github.io"
     }, false);
@@ -638,7 +638,7 @@
 
     document.addEventListener('DOMContentLoaded', function (){
       document.querySelector('.chat-tab[data-target="chatTwitch"]').classList.add('active');
-      document.querySelector('chatTwitch').classList.add('active');
+      document.queryElementById('chatTwitch').classList.add('active');
     }); 
     
     document.querySelectorAll('.chat-tab').forEach(tab => {
