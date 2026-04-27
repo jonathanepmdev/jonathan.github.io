@@ -477,7 +477,7 @@
       </div>
       <div class="chat-content">
         
-        <div class="chat-wrap" id="chatTwitch"><iframe src="https://www.twitch.tv/embed/charlitoss/chat?darkpopout&amp;parent=jonathanepmdev.github.io"></iframe></div>
+        <div class="chat-wrap" id="chatTwitch"><iframe src="https://www.twitch.tv/embed/charlitoss/chat?darkpopout&amp;parent=jonathanepmdev/jonathan.github.io"></iframe></div>
       </div>
     </div>
 
@@ -625,7 +625,7 @@
     applyJson({
       streamUrl: "https://player.kick.com/lacobraaa",
       twitchChannel: "https://www.twitch.tv/charlitoss",
-      twitchParent: "jonathanepmdev.github.io"
+      twitchParent: "jonathanepmdev/jonathan.github.io"
     })
 
     // Polling cada 30 segundos
@@ -634,6 +634,10 @@
     // ─────────────────────────────────────────────
     //  Tabs del chat
     // ─────────────────────────────────────────────
+
+    document.querySelector('.chat-tab[data-target="chatTwitch"]').classList.add('active');
+    document.querySelector('chatTwitch').classList.add('active');
+    
     document.querySelectorAll('.chat-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
