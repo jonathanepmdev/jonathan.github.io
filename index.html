@@ -465,7 +465,7 @@
     <script>
     // ─────────────────────────────────────────────    // CONFIGURACIÓN — edita solo esta sección    // ─────────────────────────────────────────────    
         const CONFIG = {
-            streamUrl: "https://www.youtube.com/embed/vGNglKWqwcQ?autoplay=1&mute=1&controls=1", 
+            streamUrl: "https://www.youtube.com/embed/vGNglKWqwcQ?autoplay=1", 
             // URL del player (Kick o YouTube)      
             twitchChannel: "charlitoss", 
             // Nombre del canal de Twitch para el chat      
@@ -478,7 +478,7 @@
         // Toggle chat    
         function toggleChat() {
             chatVisible = !chatVisible;document.getElementById('chatCol').classList.toggle('collapsed', !chatVisible);
-            document.getElementById('chatToggleLabel').textContent = chatVisible ? 'Ocultar Chat' : 'Mostrar Chat';
+            document.getElementById('chatToggleLabel').textContent = chatVisible ? 'OCULTAR CHAT' : 'MOSTRAR CHAT';
         }
         // Indicador LIVE    
         function setLiveState(isLive) {
@@ -503,7 +503,7 @@
 
         // Imagen offline    
         function showOffline() {
-            const img = CONFIG.offlineImg ? `<img class="no-stream-img" src="${CONFIG.offlineImg}" alt="Offline">` : `<div style="color:var(--muted);font-size:14px">Stream offline</div>`;
+            const img = CONFIG.offlineImg ? `<img class="no-stream-img" src="${CONFIG.offlineImg}" alt="Offline">` : `<div style="color:var(--muted);font-size:14px">Stream Offline</div>`;
             document.getElementById('playerFrameContainer').innerHTML = `<div class="no-stream">${img}</div>`;
         }
 
