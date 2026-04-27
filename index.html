@@ -477,7 +477,7 @@
       </div>
       <div class="chat-content">
         
-        <div class="chat-wrap" id="chatTwitch"><iframe src="https://www.twitch.tv/embed/charlitoss/chat?darkpopout&amp;parent=jonathanepmdev.github.io"></iframe></div>
+        <div class="chat-wrap active" id="chatTwitch"><iframe src="https://www.twitch.tv/embed/charlitoss/chat?darkpopout&amp;parent=jonathanepmdev.github.io"></iframe></div>
       </div>
     </div>
 
@@ -636,10 +636,10 @@
     //  Tabs del chat
     // ─────────────────────────────────────────────
 
-    document.addEventListener('DOMContentLoaded', function (){
-      document.querySelector('.chat-tab[data-target="chatTwitch"]').classList.add('active');
-      document.getElementById('chatTwitch').classList.add('active');
-    }); 
+    //document.addEventListener('DOMContentLoaded', function (){
+    //  document.querySelector('.chat-tab[data-target="chatTwitch"]').classList.add('active');
+    //  document.getElementById('chatTwitch').classList.add('active');
+    //}); 
     
     document.querySelectorAll('.chat-tab').forEach(tab => {
       tab.addEventListener('click', () => {
