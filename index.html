@@ -635,8 +635,10 @@
     //  Tabs del chat
     // ─────────────────────────────────────────────
 
-    document.querySelector('.chat-tab[data-target="chatTwitch"]').classList.add('active');
-    document.querySelector('chatTwitch').classList.add('active');
+    document.addEventListener('DOMContentLoaded', function (){
+      document.querySelector('.chat-tab[data-target="chatTwitch"]').classList.add('active');
+      document.querySelector('chatTwitch').classList.add('active');
+    }); 
     
     document.querySelectorAll('.chat-tab').forEach(tab => {
       tab.addEventListener('click', () => {
